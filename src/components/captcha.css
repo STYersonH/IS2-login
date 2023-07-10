@@ -1,0 +1,22 @@
+/* Para el captcha */
+
+.card {
+  width: 350px;
+  height: 280px;
+  border-radius: 20px;
+  background: #e0e0e0;
+  box-shadow: 15px 15px 30px #bebebe, 
+  -15px -15px 30px #ffffff;
+}
+
+.h3 {
+  color: #960A25;
+  text-decoration: line-through;
+  user-select: none;
+  background-color: white;
+  border-radius: 5px;
+  width: 100px;
+  height: 35px;
+  font-size: 22px;
+  margin-bottom: auto;
+}
