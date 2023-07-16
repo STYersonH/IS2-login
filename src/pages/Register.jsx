@@ -4,29 +4,23 @@ import { FaRegEnvelope } from "react-icons/fa";
 import { MdLockOutline } from "react-icons/md";
 import { Link } from "react-router-dom";
 import Alerta from "../components/Alerta";
+import { useForm } from "react-hook-form";
 
 const Register = () => {
-	const nameRef = createRef();
-	const emailRef = createRef();
-	const passwordRef = createRef();
-	const passwordConfirmationRef = createRef();
+	// usar variables globales para los errores
+	const [errores, setErrores] = useState({});
 
-	//me quede aqui
-	const [errors, setErrors] = useState({});
-	//const { register } = useAuth({ middleware: "guest", url: "/" });
+	// usando useForm para trabajar con formularios
+	const {
+		register,
+		formState: { errors },
+		watch,
+		handleSubmit,
+	} = useForm({
+		defaultValues: {},
+	});
 
-	const handleSubmit = async (e) => {
-		e.preventDefault();
-
-		const datos = {
-			name: nameRef.current.value,
-			email: emailRef.current.value,
-			password: passwordRef.current.value,
-			password_confirmation: passwordConfirmationRef.current.value,
-		};
-
-		//Realizar el proceso de registrar
-	};
+	const onSubmit = async (data) => {};
 
 	return (
 		<>
@@ -41,59 +35,91 @@ const Register = () => {
 				<form
 					action=""
 					className="flex flex-col items-center justify-center"
-					onSubmit={handleSubmit}
+					onSubmit={handleSubmit(onSubmit)}
 				>
-					{Array.isArray(errors)
-						? errors?.map((error, id) => (
-								<p key={id} className="w-[90%]">
-									<Alerta>{error}</Alerta>
-								</p>
-						  ))
-						: null}
-					<div className="bg-gray-100 w-[90%] p-2 flex items-center m-5 rounded-xl">
-						<AiOutlineUser className="text-gray-400 m-2" />
+					{/* mostrar errores para nombre */}
+					{errors.nombre?.type === "required" && (
+						<p className="error">El campo nombre es requerido</p>
+					)}
+					<div className="bg-gray-100 w-[90%] p-2 flex items-center mb-5 rounded-xl">
+						<AiOutlineUser className="text-gray-400 my-2 mx-3" />
 						<input
 							type="text"
-							placeholder="your name"
-							id="name"
+							{...register("nombre", {
+								required: true,
+							})}
+							placeholder="tu nombre"
+							id="nombre"
 							className="bg-gray-100 outline-none text-sm flex-1"
-							name="name"
-							ref={nameRef}
+							name="nombre"
 						/>
 					</div>
+
+					{/* mostrar errores para email*/}
+					{errors.email?.type === "required" && (
+						<p className="error">El campo email es requerido</p>
+					)}
+					{errors.email?.type === "pattern" && (
+						<p className="error">Se debe asignar un email valido</p>
+					)}
 					<div className="bg-gray-100 w-[90%] p-2 flex items-center mb-5 rounded-xl">
-						<FaRegEnvelope className="text-gray-400 m-2" />
+						<FaRegEnvelope className="text-gray-400 my-2 mx-3" />
 						<input
 							type="email"
-							placeholder="your email"
+							{...register("email", {
+								required: true,
+								pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/i,
+							})}
+							placeholder="tu email"
 							id="email"
 							className="bg-gray-100 outline-none text-sm flex-1"
 							name="email"
-							ref={emailRef}
 						/>
 					</div>
 
+					{/* mostrar errores para password */}
+					{errors.password?.type === "minLength" && (
+						<p className="error">Password debe tener al menos 8 letras</p>
+					)}
+					{errors.password?.type === "required" && (
+						<p className="error">El campo password es requerido</p>
+					)}
 					<div className="bg-gray-100 w-[90%] p-2 flex items-center mb-5 rounded-xl">
-						<MdLockOutline className="text-gray-400 m-2" />
+						<MdLockOutline className="text-gray-400 my-2 mx-3" />
 						<input
 							type="password"
-							placeholder="your password"
+							{...register("password", {
+								required: true,
+								minLength: 8,
+							})}
+							placeholder="tu password"
 							id="password"
 							className="bg-gray-100 outline-none text-sm flex-1"
 							name="password"
-							ref={passwordRef}
 						/>
 					</div>
 
+					{/* mostrar errores para password confirmation */}
+					{errors.password?.type === "minLength" && (
+						<p className="error">
+							Password confirm debe tener al menos 8 letras
+						</p>
+					)}
+					{errors.password?.type === "required" && (
+						<p className="error">El campo confirmar password es requerido</p>
+					)}
 					<div className="bg-gray-100 w-[90%] p-2 flex items-center mb-5 rounded-xl">
-						<MdLockOutline className="text-gray-400 m-2" />
+						<MdLockOutline className="text-gray-400 my-2 mx-3" />
 						<input
 							type="password"
-							placeholder="your password again"
+							{...register("passwordConfirm", {
+								required: true,
+								minLength: 8,
+							})}
+							placeholder="tu password una vez mas"
 							id="password_confirm"
 							className="bg-gray-100 outline-none text-sm flex-1"
 							name="password_confirm"
-							ref={passwordConfirmationRef}
 						/>
 					</div>
 					<nav className="text-white mb-5 float-left">

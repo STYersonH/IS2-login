@@ -1,9 +1,7 @@
 import {
 	Alert,
-	Button,
 	CardActions,
 	CardContent,
-	CardHeader,
 	Divider,
 	IconButton,
 	TextField,
@@ -13,26 +11,24 @@ import RefreshIcon from "@mui/icons-material/Refresh";
 import "./captcha.css";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
-function Captcha() {
+function Captcha({ ObtenerResultadoCaptcha, color = "primary", disabled }) {
 	const randomString = Math.random().toString(36).slice(8);
 	const [captcha, setCaptcha] = useState(randomString);
 	const [text, setText] = useState("");
 	const [valid, setValid] = useState(false);
-	const [success, setSuccess] = useState(false);
 
 	const refreshString = () => {
 		setText("");
 		setCaptcha(Math.random().toString(36).slice(8));
 	};
 
-	const matchCaptcha = (event) => {
+	const matchCaptcha = async (event) => {
 		event.preventDefault();
-		if (text === captcha) {
-			setValid(false);
-			setSuccess(true);
+
+		if (event.target.value === captcha) {
+			ObtenerResultadoCaptcha(true);
 		} else {
-			setValid(true);
-			setSuccess(false);
+			ObtenerResultadoCaptcha(false);
 		}
 	};
 
@@ -40,9 +36,12 @@ function Captcha() {
 	const theme = createTheme({
 		palette: {
 			primary: {
-				main: "#960A25",
+				main: "#FFF",
 			},
 			secondary: {
+				main: `rgb(202 138 4 / var(--tw-bg-opacity))`,
+			},
+			disabled: {
 				main: "#FFF",
 			},
 		},
@@ -50,50 +49,44 @@ function Captcha() {
 
 	return (
 		<>
-			{success && (
-				<Alert variant="outlined" sx={{ marginBottom: "20px" }}>
-					Successful
-				</Alert>
-			)}
-			<Divider />
-
-			<CardContent>
-				<CardActions>
-					<div className="h3 flex justify-center mr-1">{captcha}</div>
-					<ThemeProvider theme={theme}>
-						<IconButton onClick={() => refreshString()} color="secondary">
+			<ThemeProvider theme={theme}>
+				<CardContent variant={color}>
+					{/*sx={{ backgroundColor: "#000" }} : para dar estilo a CardActions */}
+					<CardActions>
+						{color === "primary" ? (
+							<div className={`h3-primary flex justify-center mr-1`}>
+								{captcha}
+							</div>
+						) : (
+							<div className={`h3-secondary flex justify-center mr-1`}>
+								{captcha}
+							</div>
+						)}
+						<IconButton onClick={() => refreshString()} color={color}>
 							<RefreshIcon color="#960A25" />
 						</IconButton>
-					</ThemeProvider>
-				</CardActions>
+					</CardActions>
 
-				<form onSubmit={matchCaptcha}>
-					<ThemeProvider theme={theme}>
+					<form onSubmit={matchCaptcha}>
 						<TextField
-							color="secondary"
+							color={color}
 							label="Enter Captcha"
 							focused
 							value={text}
 							fullWidth
-							onChange={(e) => setText(e.target.value)}
+							onChange={(e) => {
+								setText(e.target.value);
+								matchCaptcha(e);
+							}}
 							error={valid}
 							helperText={valid && "Invalid Captcha"}
 							inputProps={{
 								style: { color: "white" },
 							}}
 						/>
-					</ThemeProvider>
-
-					{/* <Button
-						variant="contained"
-						color="success"
-						type="submit"
-						sx={{ marginTop: "20px" }}
-					>
-						Submit
-					</Button> */}
-				</form>
-			</CardContent>
+					</form>
+				</CardContent>
+			</ThemeProvider>
 		</>
 	);
 }

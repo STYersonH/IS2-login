@@ -9,8 +9,20 @@
   -15px -15px 30px #ffffff;
 }
 
-.h3 {
-  color: #960A25;
+.h3-primary {
+  color: #960A25; 
+  text-decoration: line-through;
+  user-select: none;
+  background-color: white;
+  border-radius: 5px;
+  width: 100px;
+  height: 35px;
+  font-size: 22px;
+  margin-bottom: auto;
+}
+
+.h3-secondary {
+  color: rgb(202 138 4 / var(--tw-bg-opacity)); 
   text-decoration: line-through;
   user-select: none;
   background-color: white;
