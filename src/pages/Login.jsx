@@ -6,10 +6,14 @@ import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import usuarios from "../data/usuarios";
 import { useNavigate } from "react-router-dom";
+import { useStateValue } from "../context/stateProvider";
 
 const Login = () => {
 	// usar useHistory para redireccionar
 	const navigate = useNavigate();
+
+	// para registrar al usuario logeado
+	const [{ userActual, users }, reducer] = useStateValue();
 
 	const [errores, setErrores] = useState({}); // usar variables globales para los errores
 	const [loginAttempts, setLoginAttempts] = useState(0); // intentos de login
@@ -44,8 +48,8 @@ const Login = () => {
 			setIsBlocked(true);
 
 			const now = new Date();
-			// Bloquear por 2 minutos
-			const blockedUntil = new Date(now.getTime() + 2 * 60 * 1000);
+			// Bloquear por 24 horas
+			const blockedUntil = new Date(now.getTime() + 24 * 60 * 60 * 1000);
 			setBlockedUntil(blockedUntil);
 			localStorage.setItem("blockedUntil", blockedUntil.toString());
 			// Display error message
@@ -88,7 +92,19 @@ const Login = () => {
 			procesarIntentoFallido();
 			return;
 		}
-		// si todo esta bien, redireccionar a la pagina de inicio
+
+		// si todo esta bien, actualizar al userActual
+		// obtener informacion del userActual de users
+		const userEncontrado = users.find((user) => user.email === email);
+		// actualizar al userActual
+		await reducer({
+			type: "SET_USER_ACTUAL",
+			userActual: userEncontrado,
+		});
+		// guardar en localStorage
+		await localStorage.setItem("userActual", JSON.stringify(userEncontrado));
+
+		// redireccionar a la pagina de inicio
 		navigate("/");
 	};
 
@@ -129,7 +145,7 @@ const Login = () => {
 		// Remove error message after 3 seconds
 		const timer = setTimeout(() => {
 			setErrores({});
-		}, 3000);
+		}, 5000);
 
 		// Clear timer if component unmounts
 		return () => clearTimeout(timer);
@@ -234,9 +250,8 @@ const Login = () => {
 					<input
 						type="submit"
 						value="Iniciar sesion"
-						className={`text-white hover:text-[#960A25] border-2 border-white [#960A25] hover:bg-white rounded-3xl py-2.5 px-5 my-4 cursor-pointer ${
-							isBlocked &&
-							"cursor-not-allowed hover:text-white hover:bg-[#960A25]"
+						className={`text-white hover:text-[#960A25] border-2 border-white hover:bg-white rounded-3xl py-2.5 px-5 my-4 cursor-pointer ${
+							isBlocked && "hover:text-white hover:bg-[#960A26] cursor-auto"
 						}`}
 						disabled={isBlocked}
 					/>

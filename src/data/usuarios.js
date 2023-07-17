@@ -9,15 +9,14 @@ const usuarios = [
     id: 2,
     nombre: 'Pedro',
     email: 'pedro@gmail.com',
-    password: 'pedro',
+    password: 'pedropedro',
   },
   {
     id: 3,
     nombre: 'Maria',
     email: 'maria@gmail.com',
-    password: 'maria',
+    password: 'mariamaria',
   }
-
 ]
 
 export default usuarios

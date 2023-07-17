@@ -1,14 +1,21 @@
-import { createRef, useState } from "react";
+import { useState } from "react";
 import { AiOutlineUser } from "react-icons/ai";
 import { FaRegEnvelope } from "react-icons/fa";
 import { MdLockOutline } from "react-icons/md";
 import { Link } from "react-router-dom";
-import Alerta from "../components/Alerta";
 import { useForm } from "react-hook-form";
 
+import { useNavigate } from "react-router-dom";
+import { useStateValue } from "../context/stateProvider";
+
 const Register = () => {
+	const navigate = useNavigate();
+
 	// usar variables globales para los errores
 	const [errores, setErrores] = useState({});
+
+	// para registrar al usuario logeado
+	const [{ users }, reducer] = useStateValue();
 
 	// usando useForm para trabajar con formularios
 	const {
@@ -20,7 +27,47 @@ const Register = () => {
 		defaultValues: {},
 	});
 
-	const onSubmit = async (data) => {};
+	const nombre = watch("nombre");
+	const email = watch("email");
+	const password = watch("password");
+	const password_confirm = watch("password_confirm");
+
+	const confirmationPassword = () => {
+		return password === password_confirm;
+	};
+
+	const onSubmit = async (data) => {
+		//revisar que las contrasenias coincidan
+		if (!confirmationPassword()) {
+			setErrores({
+				...errores,
+				password_confirm: "Las contraseñas no coinciden",
+			});
+			return;
+		}
+
+		// si todo va bien, se crea el usuario
+		const dataNewUser = {
+			id: users.length + 1,
+			nombre: data.nombre,
+			email: data.email,
+			password: data.password,
+		};
+
+		console.log("nuevo users: ", [...users, dataNewUser]);
+
+		// se agrega el usuario a la lista de usuarios
+		reducer({
+			type: "SET_USERS",
+			users: [...users, dataNewUser],
+		});
+
+		// se guarda el usuario en el local storage
+		localStorage.setItem("userActual", JSON.stringify(dataNewUser));
+
+		// redirigir al home page
+		navigate("/");
+	};
 
 	return (
 		<>
@@ -100,19 +147,17 @@ const Register = () => {
 					</div>
 
 					{/* mostrar errores para password confirmation */}
-					{errors.password?.type === "minLength" && (
-						<p className="error">
-							Password confirm debe tener al menos 8 letras
-						</p>
-					)}
-					{errors.password?.type === "required" && (
+					{errors.password_confirm?.type === "required" && (
 						<p className="error">El campo confirmar password es requerido</p>
+					)}
+					{errores.password_confirm && (
+						<p className="error">El password ingresado no coincide </p>
 					)}
 					<div className="bg-gray-100 w-[90%] p-2 flex items-center mb-5 rounded-xl">
 						<MdLockOutline className="text-gray-400 my-2 mx-3" />
 						<input
 							type="password"
-							{...register("passwordConfirm", {
+							{...register("password_confirm", {
 								required: true,
 								minLength: 8,
 							})}
