@@ -153,6 +153,11 @@ const Login = () => {
 
 	return (
 		<>
+			{isBlocked && (
+				<p className="bg-white text-[#960A26] font-bold rounded-xl py-2">
+					El usuario ya no tiene intentos, intentar despues de 24 horas
+				</p>
+			)}
 			<h1 className="text-white font-bold">{valorCaptcha}</h1>
 			<h1 className="text-3xl font-bold text-center text-white mb-2 mt-5">
 				Login
